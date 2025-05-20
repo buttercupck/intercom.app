@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase.ts";
 import { useNavigate } from "react-router-dom";
+import InterpreterCard from "../components/InterpreterCard";
 
 function Interpreters() {
   const [interpreters, setInterpreters] = useState([]);
@@ -10,7 +11,7 @@ function Interpreters() {
     async function fetchInterpreters() {
       const { data, error } = await supabase
         .from("interpreters")
-        .select("id, first_name, last_name, language_1")
+        .select("id, first_name, last_name, language_1, phone, email")
         .order("first_name", { ascending: true });
 
       if (error) console.error(error);
@@ -37,15 +38,13 @@ function Interpreters() {
         <h1 className="text-2xl font-bold mb-4">Interpreters</h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {interpreters.map((int) => (
-            <div
-              key={int.id}
-              onClick={() => navigate(`/interpreters/${int.id}`)}
-              className="cursor-pointer rounded-xl bg-white shadow p-4 hover:bg-gray-100 transition"
-            >
-              <h2 className="text-lg font-bold">
-                {int.first_name} {int.last_name}
-              </h2>
-              <p className="text-sm text-gray-600">{int.language_1}</p>
+            <div key={int.id} onClick={() => navigate(`/interpreters/${int.id}`)}>
+              <InterpreterCard
+                name={`${int.first_name} ${int.last_name}`}
+                phone={int.phone || "N/A"}
+                email={int.email || "N/A"}
+                languages={[int.language_1]}
+              />
             </div>
           ))}
         </div>
