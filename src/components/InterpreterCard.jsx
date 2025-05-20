@@ -1,27 +1,3 @@
-import React from 'react';
-
-interface InterpreterCardProps {
-  name: string;
-  phone: string;
-  email: string;
-  languages: string[];
+{
+  "component": "import React from 'react';\n\nconst CourtCard = ({ courtName, address, numJobs }) => {\n  return (\n    <div className=\"court-card\">\n      <h2>{courtName}</h2>\n      <p>{address}</p>\n      <p>Number of Jobs: {numJobs}</p>\n    </div>\n  );\n};\n\nexport default CourtCard;"
 }
-
-const InterpreterCard: React.FC<InterpreterCardProps> = ({ name, phone, email, languages }) => {
-  return (
-    <div className="border border-gray-300 shadow-md p-4 rounded-lg max-w-sm mx-auto">
-      <h2 className="text-xl font-bold mb-2">{name}</h2>
-      <p className="text-gray-700 mb-2">Phone: <a href={`tel:${phone}`} className="text-blue-500">{phone}</a></p>
-      <p className="text-gray-700 mb-2">Email: <a href={`mailto:${email}`} className="text-blue-500">{email}</a></p>
-      <div className="flex flex-wrap gap-2">
-        {languages.map((language, index) => (
-          <span key={index} className="bg-blue-100 text-blue-800 text-sm font-medium px-2.5 py-0.5 rounded-full">
-            {language}
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-export default InterpreterCard;
