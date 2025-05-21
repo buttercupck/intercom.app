@@ -1,29 +1,23 @@
-  import React from 'react';
 
-  const InterpreterCard = ({ name, phone, email, languages }) => {
-    return (
-      <div className="border border-gray-300 shadow-md p-4 rounded-lg max-w-sm mx-auto">
-        <h2 className="text-xl font-bold mb-2">{name}</h2>
-        <p className="text-gray-700 mb-2">
-          Phone: <a href={`tel:${phone}`} className="text-blue-500">{phone}</a>
-        </p>
-        <p className="text-gray-700 mb-2">
-          Email: <a href={`mailto:${email}`} className="text-blue-500">{email}</a>
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {languages.map((language, index) => (
-            <span key={index} className="bg-blue-100 text-blue-800 text-sm font-medium px-2.5 py-0.5 rounded-full">
-              {language}
-            </span>
-          ))}
-        </div>
-      </div>
-    );
-  };
 {
-  "component": "import React from 'react';\n\nconst AlertMessage = () => {\n  return (\n    <div className=\"text-red-500 font-bold\">\n      Session expired.\n    </div>\n  );\n};\n\nexport default AlertMessage;"
+  "Dashboard.jsx": {
+    "description": "Main container file for the INTERCOM dashboard",
+    "code": "import React, { useState } from 'react';\nimport JobStatusSidebar from './JobStatusSidebar';\nimport FilterHeader from './FilterHeader';\nimport CalendarView from './CalendarView';\nimport EventDetails from './EventDetails';\n\nconst Dashboard = () => {\n  const [selectedJob, setSelectedJob] = useState(null);\n  const [visibleCalendars, setVisibleCalendars] = useState(['Pending', 'Confirmed', 'Spanish Pending', 'Spanish Confirmed', 'Hilary & Harry']);\n\n  // Handler to toggle calendar filters\n  const toggleCalendarFilter = (filter) => {\n    setVisibleCalendars((prev) => \n      prev.includes(filter) ? prev.filter(f => f !== filter) : [...prev, filter]\n    );\n  };\n\n  return (\n    <div className=\"flex\">\n      <JobStatusSidebar visibleCalendars={visibleCalendars} toggleCalendarFilter={toggleCalendarFilter} />\n      <div className=\"flex-1 flex flex-col\">\n        <FilterHeader />\n        <div className=\"flex-1 flex\">\n          <CalendarView visibleCalendars={visibleCalendars} onSelectJob={setSelectedJob} />\n          <EventDetails jobDetails={selectedJob} />\n        </div>\n      </div>\n    </div>\n  );\n};\n\nexport default Dashboard;"
+  },
+  "JobStatusSidebar.jsx": {
+    "description": "Sidebar for job status filters",
+    "code": "import React from 'react';\n\nconst JobStatusSidebar = ({ visibleCalendars, toggleCalendarFilter }) => {\n  const filters = [\n    'Pending',\n    'Confirmed',\n    'Spanish Pending',\n    'Spanish Confirmed',\n    'Hilary & Harry'\n  ];\n\n  return (\n    <div className=\"w-1/4 p-4 bg-gray-200\">\n      <h2 className=\"font-bold mb-4\">Job Status Filters</h2>\n      {filters.map((filter) => (\n        <div key={filter} className=\"mb-2\">\n          <label className=\"flex items-center\">\n            <input\n              type=\"checkbox\"\n              checked={visibleCalendars.includes(filter)}\n              onChange={() => toggleCalendarFilter(filter)}\n              className=\"mr-2\"\n            />\n            {filter}\n          </label>\n        </div>\n      ))}\n    </div>\n  );\n};\n\nexport default JobStatusSidebar;"
+  },
+  "FilterHeader.jsx": {
+    "description": "Header with date and filter dropdowns",
+    "code": "import React from 'react';\n\nconst FilterHeader = () => {\n  const today = new Date();\n  const formattedDate = today.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });\n\n  return (\n    <div className=\"p-4 bg-gray-300 flex justify-between items-center\">\n      <h2 className=\"text-xl font-bold\">{formattedDate}</h2>\n      <div className=\"flex space-x-4\">\n        <select className=\"p-2 border border-gray-400 rounded\">\n          <option>Language</option>\n        </select>\n        <select className=\"p-2 border border-gray-400 rounded\">\n          <option>Calendar</option>\n        </select>\n        <select className=\"p-2 border border-gray-400 rounded\">\n          <option>Court</option>\n        </select>\n        <select className=\"p-2 border border-gray-400 rounded\">\n          <option>Interpreter</option>\n        </select>\n      </div>\n      <div className=\"flex space-x-2\">\n        <button className=\"p-2 bg-blue-500 text-white rounded\">Day</button>\n        <button className=\"p-2 bg-blue-500 text-white rounded\">Week</button>\n        <button className=\"p-2 bg-blue-500 text-white rounded\">Month</button>\n        <button className=\"p-2 bg-blue-500 text-white rounded\">Year</button>\n        <button className=\"p-2 bg-green-500 text-white rounded\">Today</button>\n      </div>\n    </div>\n  );\n};\n\nexport default FilterHeader;"
+  },
+  "CalendarView.jsx": {
+    "description": "Displays calendar view for job times",
+    "code": "import React from 'react';\n\nconst CalendarView = ({ visibleCalendars, onSelectJob }) => {\n  // For now, render a placeholder message\n  return (\n    <div className=\"flex-1 p-4 border-r border-gray-200\">\n      <h2 className=\"text-lg font-bold mb-4\">Calendar View</h2>\n      <div className=\"p-4 border border-gray-300 rounded\">\n        <p>No events to display. (6AM - 8PM)</p>\n      </div>\n    </div>\n  );\n};\n\nexport default CalendarView;"
+  },
+  "EventDetails.jsx": {
+    "description": "Sidebar for showing details of a selected job",
+    "code": "import React from 'react';\n\nconst EventDetails = ({ jobDetails }) => {\n  return (\n    <div className=\"w-1/4 p-4 bg-gray-100\">\n      <h2 className=\"font-bold mb-4\">Event Details</h2>\n      {jobDetails ? (\n        <div>\n          <p>Job ID: {jobDetails.id}</p>\n          <p>Interpreter: {jobDetails.interpreter}</p>\n          <p>Details: {jobDetails.details}</p>\n        </div>\n      ) : (\n        <p>No Event Selected</p>\n      )}\n    </div>\n  );\n};\n\nexport default EventDetails;"
+  }
 }
-
-  export default InterpreterCard;
-
-
