@@ -19,7 +19,7 @@ function Court() {
 
   return (
       <div className="w-full max-w-4xl mx-auto">
-        <h2 className="text-2xl font-bold mb-4">Courts Table</h2>
+        <h2 className="text-2xl font-bold mb-4">court Table</h2>
         <table className="min-w-full border border-gray-300">
           <thead className="bg-gray-200">
             <tr>

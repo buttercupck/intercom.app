@@ -19,8 +19,8 @@ export default function Reminders() {
         case_notes,
         reminder_sent,
         interpreter:interpreter_id (full_name),
-        courtroom:courtroom_id (
-          courtroom_name,
+        courtroom:courtrooms_id (
+          courtrooms_name,
           zoom_link,
           court:court_id (name)
         )
