@@ -2,11 +2,9 @@ import React from 'react';
 
 const JobStatusSidebar = ({ selected, onToggle }) => {
   const statusOptions = [
+    'Initial',
     'Pending',
     'Confirmed',
-    'Spanish Pending',
-    'Spanish Confirmed',
-    'Hilary & Harry'
   ];
 
   const handleToggle = (status) => {

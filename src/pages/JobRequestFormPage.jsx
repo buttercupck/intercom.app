@@ -1,6 +1,6 @@
 // src/pages/JobRequestFormPage.jsx
 import { useEffect, useState } from "react";
-import { supabase } from "../lib/supabase";
+import { supabase } from "../lib/supabase.ts";
 import JobRequestForm from "../components/JobRequestForm";
 
 export default function JobRequestFormPage() {

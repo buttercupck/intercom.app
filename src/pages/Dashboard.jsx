@@ -1,29 +1,75 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { startOfWeek, endOfWeek } from 'date-fns';
+import { supabase } from '../lib/supabase.ts';
 import JobStatusSidebar from '../components/JobStatusSidebar';
-import FilterHeader from '../components/FilterHeader';
 import CalendarView from '../components/CalendarView';
 import EventDetails from '../components/EventDetails';
 
-const Dashboard = () => {
+export default function Dashboard() {
+  const [jobs, setJobs] = useState([]);
+  const [activeStatuses, setActiveStatuses] = useState(["initial", "pending", "confirmed"]);
   const [selectedJob, setSelectedJob] = useState(null);
-  const [visibleCalendars, setVisibleCalendars] = useState([]);
 
-  const handleToggleCalendars = (newFilters) => {
-    setVisibleCalendars(newFilters);
-  };
+  useEffect(() => {
+    const fetchJobs = async () => {
+      const start = startOfWeek(new Date(), { weekStartsOn: 0 });
+      const end = endOfWeek(new Date(), { weekStartsOn: 0 });
+
+      const { data, error } = await supabase
+        .from('requests')
+        .select(`
+          *,
+          interpreters (
+            first_name,
+            last_name
+          ),
+          courtrooms (
+            courtrooms_name,
+            zoom_link,
+            court (
+              name,
+              address
+            )
+          )
+        `)
+        .gte('requested_date', start.toISOString())
+        .lte('requested_date', end.toISOString())
+        .order('requested_date', { ascending: true });
+
+      if (error) {
+        console.error("Error fetching jobs:", error);
+      } else {
+        setJobs(data);
+      }
+    };
+
+    fetchJobs();
+  }, []);
+
+  // Filter jobs by activeStatuses
+  const filteredJobs = jobs.filter(job => activeStatuses.includes(job.status.toLowerCase()));
 
   return (
-    <div className="flex">
-      <div className="w-64 bg-gray-100"><JobStatusSidebar selected={visibleCalendars} onToggle={handleToggleCalendars} /></div>
-      <div className="flex-1 flex flex-col">
-        <div><FilterHeader /></div>
+    <div className="flex h-screen">
+      {/* Sidebar for status filters */}
+      <div className="w-64 bg-gray-100 border-r">
+        <JobStatusSidebar selected={activeStatuses} onToggle={setActiveStatuses} />
+      </div>
+
+      {/* Main Calendar + Details */}
+      <div className="flex flex-1 flex-col">
         <div className="flex flex-1">
-          <div className="flex-1"><CalendarView selectedJob={selectedJob} visibleCalendars={visibleCalendars} /></div>
-          <div className="w-72 bg-gray-200"><EventDetails job={selectedJob} /></div>
+          {/* Calendar */}
+          <div className="flex-1">
+            <CalendarView jobs={filteredJobs} onSelectJob={setSelectedJob} />
+          </div>
+
+          {/* Event Detail Panel */}
+          <div className="w-80 bg-gray-200 border-l overflow-y-auto">
+            <EventDetails job={selectedJob} />
+          </div>
         </div>
       </div>
     </div>
   );
-};
-
-export default Dashboard;
+}

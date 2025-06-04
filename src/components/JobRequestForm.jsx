@@ -11,8 +11,7 @@
           required_language: "",
           interpreter_id: "",
           court_id: "",
-          courtrooms_id: "",
-          requested_date: "",
+          courtroom_id: "",
           start_time: "",
           duration: 120,
           case_number: "",
@@ -36,13 +35,26 @@
 
         const handleSubmit = (e) => {
           e.preventDefault();
-          onSubmit(formData);
+
+          // Get ISO string of start_time from datetime-local input
+          const start = new Date(formData.start_time);
+
+          // Add duration (in minutes)
+          const end = new Date(start.getTime() + formData.duration * 60000);
+
+          // Format both as ISO strings for Supabase
+          onSubmit({
+            ...formData,
+            start_time: start.toISOString(),
+            end_time: end.toISOString()
+          });
+
+         
           setFormData({
             required_language: "",
             interpreter_id: "",
             court_id: "",
             courtroom_id: "",
-            requested_date: "",
             start_time: "",
             duration: 120,
             case_number: "",
@@ -138,8 +150,8 @@
             <div className="space-y-2">
               <label>Courtroom</label>
               <select
-                name="courtrooms_id"
-                value={formData.courtrooms_id}
+                name="courtroom_id"
+                value={formData.courtroom_id}
                 onChange={handleChange}
                 className="w-full border rounded p-2"
                 required
@@ -155,7 +167,6 @@
 
             {/* Other fields */}
             {[
-              { label: "Requested Date", name: "requested_date", type: "date" },
               { label: "Start Time", name: "start_time", type: "time" },
               { label: "Duration (minutes)", name: "duration", type: "number" },
               { label: "Modality", name: "modality", type: "select", options: ["Zoom", "Phone", "In-Person"] },
@@ -206,6 +217,6 @@
             >
               Submit Request
             </button>
-          </form>
-        );
-      }
+                    </form>
+                  );
+          }
