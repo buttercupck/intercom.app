@@ -26,15 +26,16 @@ export default function Dashboard() {
           courtrooms (
             courtrooms_name,
             zoom_link,
+            zoom_login,
             court (
               name,
               address
             )
           )
         `)
-        .gte('requested_date', start.toISOString())
-        .lte('requested_date', end.toISOString())
-        .order('requested_date', { ascending: true });
+        .gte('start_time', start.toISOString())
+        .lte('start_time', end.toISOString())
+        .order('start_time', { ascending: true });
 
       if (error) {
         console.error("Error fetching jobs:", error);

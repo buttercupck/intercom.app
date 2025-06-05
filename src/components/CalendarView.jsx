@@ -21,8 +21,8 @@ const localizer = dateFnsLocalizer({
 
 const CalendarView = ({ jobs, onSelectJob }) => {
   const events = jobs.map((job) => {
-    const start = new Date(job.requested_date);
-    const end = new Date(start.getTime() + (job.duration || 120) * 60000); // duration in mins
+    const start = new Date(job.start_time);
+    const end = new Date(job.end_time);
 
     const interpreter = job.interpreters?.first_name
       ? `${job.interpreters.first_name} ${job.interpreters.last_name}`
