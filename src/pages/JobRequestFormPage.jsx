@@ -2,10 +2,12 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase.ts";
 import JobRequestForm from "../components/JobRequestForm";
+import JobRequestParser from "../components/JobRequestParser";
+
 
 export default function JobRequestFormPage() {
   const [interpreters, setInterpreters] = useState(null);
-  const [court, setcourt] = useState(null);
+  const [courts, setcourt] = useState(null);
   const [courtrooms, setCourtrooms] = useState(null);
   const [languages, setLanguages] = useState([]);
   const [status, setStatus] = useState("");
@@ -44,6 +46,21 @@ export default function JobRequestFormPage() {
 
     fetchData();
   }, []);
+  const [formData, setFormData] = useState({
+    required_language: "",
+    interpreter_id: "",
+    court_id: "",
+    courtroom_id: "",
+    start_time: "",
+    duration: 120,
+    case_number: "",
+    case_notes: "",
+    modality: "Zoom",
+    defendant_name: "",
+    hearing_type: "",
+    charges: "",
+    requestor_email: ""
+  });
 
   const handleSubmit = async (formData) => {
     const { error } = await supabase.from("requests").insert([{ ...formData }]);
@@ -54,13 +71,18 @@ export default function JobRequestFormPage() {
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">New Job Request</h1>
       {status && <div className="mb-4 text-sm text-blue-700">{status}</div>}
-      <JobRequestForm
-        interpreters={interpreters}
-        court={court}
-        courtrooms={courtrooms}
-        languages={languages}
-        onSubmit={handleSubmit}
-      />
+      <div className="flex gap-4">
+        <JobRequestParser setFormData={setFormData} />
+        <JobRequestForm
+          interpreters={interpreters}
+          courts={courts}
+          courtrooms={courtrooms}
+          languages={languages}
+          onSubmit={handleSubmit}
+          formData={formData}
+          setFormData={setFormData}
+        />
+      </div>
     </div>
   );
 }

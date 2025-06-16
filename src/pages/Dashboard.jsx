@@ -67,7 +67,7 @@ export default function Dashboard() {
 
           {/* Event Detail Panel */}
           <div className="w-80 bg-gray-200 border-l overflow-y-auto">
-            <EventDetails job={selectedJob} />
+            <EventDetails job={selectedJob} onClose={() => setSelectedJob(null)} />
           </div>
         </div>
       </div>
