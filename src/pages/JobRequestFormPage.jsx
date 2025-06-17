@@ -1,14 +1,13 @@
 // src/pages/JobRequestFormPage.jsx
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase.ts";
-import JobRequestForm from "../components/JobRequestForm";
-import JobRequestParser from "../components/JobRequestParser";
-
+import JobRequestForm from "../components/jobs/JobRequestForm";
+import JobRequestParser from "../components/jobs/JobRequestParser";
 
 export default function JobRequestFormPage() {
   const [interpreters, setInterpreters] = useState(null);
-  const [courts, setcourt] = useState(null);
-  const [courtrooms, setCourtrooms] = useState(null);
+  const [courts, setCourt] = useState(null);
+  const [locations, setLocations] = useState(null);
   const [languages, setLanguages] = useState([]);
   const [status, setStatus] = useState("");
 
@@ -16,46 +15,46 @@ export default function JobRequestFormPage() {
     const fetchData = async () => {
       const { data: interpData, error: interpErr } = await supabase
         .from("interpreters")
-        .select("id, first_name, last_name, language_1, language_2");
+        .select("id, first_name, last_name");
 
-      const { data: courtData, error: courtErr } = await supabase
-        .from("court")
+      const { data: courtsData, error: courtErr } = await supabase
+        .from("courts")
         .select("id, name");
 
-      const { data: courtroomsData, error: courtroomsErr } = await supabase
-        .from("courtrooms")
-        .select("courtrooms_id, courtrooms_name, court_id");
+      const { data: locationsData, error: locationsErr } = await supabase
+        .from("locations")
+        .select("id, name, court_id");
 
-      if (interpErr || courtErr || courtroomsErr) {
-        console.error("Fetch error:", interpErr || courtErr || courtroomsErr);
+      const { data: langData, error: langErr } = await supabase
+        .from("languages")
+        .select("id, name");
+
+      if (interpErr || courtErr || locationsErr || langErr) {
+        console.error("Fetch error:", interpErr || courtErr || locationsErr || langErr);
         setStatus("Error loading data.");
         return;
       }
 
       setInterpreters(interpData);
-      setcourt(courtData);
-      setCourtrooms(courtroomsData);
-
-      const uniqueLanguages = new Set();
-      interpData.forEach((i) => {
-        if (i.language_1) uniqueLanguages.add(i.language_1);
-        if (i.language_2) uniqueLanguages.add(i.language_2);
-      });
-      setLanguages([...uniqueLanguages].sort());
+      setCourt(courtsData);
+      setCourtrooms(locationsData);
+      setLanguages(langData);
     };
 
     fetchData();
   }, []);
+
   const [formData, setFormData] = useState({
-    required_language: "",
+    required_language_id: "",
     interpreter_id: "",
-    court_id: "",
     courtroom_id: "",
     start_time: "",
     duration: 120,
-    case_number: "",
+    locations: "",
     case_notes: "",
+    status: "initial",
     modality: "Zoom",
+    case_number: "",
     defendant_name: "",
     hearing_type: "",
     charges: "",

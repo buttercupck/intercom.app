@@ -36,6 +36,8 @@ function Home() {
           </Link>
         </div>
       </div>
+      {/* Tailwind safelist workaround */}
+      <div className="hidden bg-green-500 bg-blue-500 bg-red-500 bg-gray-300" />
     </div>
   );
 }
@@ -44,8 +46,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Dashboard />} /> {/* This is your landing page */}
-        <Route path="/home" element={<Home />} />
+        <Route path="/" element={<Dashboard />} />
         <Route path="/court" element={<Court />} />
         <Route path="/interpreters" element={<Interpreters />} />
         <Route path="/reminders" element={<Reminders />} />

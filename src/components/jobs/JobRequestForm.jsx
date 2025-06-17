@@ -1,4 +1,6 @@
         import { useState } from "react";
+        import JobStatus from "../shared/JobStatus";
+
 
         export default function JobRequestForm({ courts, interpreters, courtrooms, languages, onSubmit, formData, setFormData }) {
           const [selectedLanguage, setSelectedLanguage] = useState("");
@@ -11,18 +13,31 @@
               [name]: value
             }));
           };
-
+          const handleStatusChange = (value) => {
+            setFormData((prev) => ({
+              ...prev,
+              status: value
+            }));
+          };
           const handleSubmit = (e) => {
             e.preventDefault();
-
             const start = new Date(formData.start_time);
             const end = new Date(start.getTime() + formData.duration * 60000);
 
-            onSubmit({
-              ...formData,
+            const requestData = {
+              interpreter_id: formData.interpreter_id,
+              required_language_id: formData.required_language_id,
+              modality: formData.modality,
               start_time: start.toISOString(),
-              end_time: end.toISOString()
-            });
+              end_time: end.toISOString(),
+              duration: formData.duration,
+              courtroom_label: formData.courtroom_id,
+              case_notes: formData.case_notes,
+              status: formData.status || "initial",
+              program_id: formData.program_id || null
+            };
+
+            onSubmit(requestData);
 
             setFormData({
               required_language: "",
@@ -37,7 +52,9 @@
               defendant_name: "",
               hearing_type: "",
               charges: "",
-              requestor_email: ""
+              requestor_email: "",
+              status: "initial",
+              program_id: ""
             });
             setSelectedLanguage("");
             setSelectedCourtId("");
@@ -57,8 +74,8 @@
               <div className="space-y-2">
                 <label>Language</label>
                 <select
-                  name="required_language"
-                  value={formData.required_language}
+                  name="required_language_id"
+                  value={formData.required_language-}
                   onChange={(e) => {
                     setSelectedLanguage(e.target.value);
                     handleChange(e);
@@ -68,8 +85,8 @@
                 >
                   <option value="">Select a language</option>
                   {languages?.map((lang) => (
-                    <option key={lang} value={lang}>
-                      {lang}
+                    <option key={lang.id} value={lang.name}>
+                      {lang.name}
                     </option>
                   ))}
                 </select>
@@ -139,79 +156,20 @@
                   ))}
                 </select>
               </div>
-
-              {/* Other fields */}
-              {[{
-                label: "Start Time",
-                name: "start_time",
-                type: "datetime-local"
-              }, {
-                label: "Duration (minutes)",
-                name: "duration",
-                type: "number"
-              }, {
-                label: "Modality",
-                name: "modality",
-                type: "select",
-                options: ["Zoom", "Phone", "In-Person"]
-              }, {
-                label: "Case Number",
-                name: "case_number",
-                type: "text"
-              }, {
-                label: "Case Notes",
-                name: "case_notes",
-                type: "textarea"
-              }, {
-                label: "Defendant Name",
-                name: "defendant_name",
-                type: "text"
-              }, {
-                label: "Hearing Type",
-                name: "hearing_type",
-                type: "text"
-              }, {
-                label: "Charges",
-                name: "charges",
-                type: "text"
-              }, {
-                label: "Requestor Email",
-                name: "requestor_email",
-                type: "email"
-              }].map((field) => (
-                <div key={field.name} className="space-y-2">
-                  <label>{field.label}</label>
-                  {field.type === "textarea" ? (
-                    <textarea
-                      name={field.name}
-                      value={formData[field.name]}
-                      onChange={handleChange}
-                      className="w-full border rounded p-2"
-                    />
-                  ) : field.type === "select" ? (
-                    <select
-                      name={field.name}
-                      value={formData[field.name]}
-                      onChange={handleChange}
-                      className="w-full border rounded p-2"
-                    >
-                      {field.options.map((opt) => (
-                        <option key={opt} value={opt}>
-                          {opt}
-                        </option>
-                      ))}
-                    </select>
-                  ) : (
-                    <input
-                      type={field.type}
-                      name={field.name}
-                      value={formData[field.name]}
-                      onChange={handleChange}
-                      className="w-full border rounded p-2"
-                    />
-                  )}
-                </div>
-              ))}
+              
+              {/* Job Status */}
+              <JobStatus status={formData.status || "initial"} onChange={handleStatusChange} />
+              
+              {/* Additional Notes */}
+              <div className="space-y-2">
+                <label>Case Notes</label>
+                <textarea
+                  name="case_notes"
+                  value={formData.case_notes}
+                  onChange={handleChange}
+                  className="w-full border rounded p-2"
+                />
+              </div>
 
               <button
                 type="submit"

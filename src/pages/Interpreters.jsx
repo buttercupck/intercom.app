@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
-import InterpreterContacts from "../components/InterpreterContacts";
+import InterpreterContacts from "../components/interpreters/InterpreterContacts";
 
 export default function Interpreters() {
   const [interpreters, setInterpreters] = useState([]);

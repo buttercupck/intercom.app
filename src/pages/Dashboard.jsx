@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { startOfWeek, endOfWeek } from 'date-fns';
+import { startOfWeek, endOfWeek, format } from 'date-fns';
 import { supabase } from '../lib/supabase.ts';
-import JobStatusSidebar from '../components/JobStatusSidebar';
-import CalendarView from '../components/CalendarView';
-import EventDetails from '../components/EventDetails';
+import Navbar from "../components/layout/Navbar";
+import JobCard from "../components/jobs/JobCard";
+import JobDetailPanel from "../components/jobs/JobDetailPanel";
 
 export default function Dashboard() {
   const [jobs, setJobs] = useState([]);
-  const [activeStatuses, setActiveStatuses] = useState(["initial", "pending", "confirmed"]);
   const [selectedJob, setSelectedJob] = useState(null);
+  const today = format(new Date(), "EEEE, MMMM d");
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -22,15 +22,6 @@ export default function Dashboard() {
           interpreters (
             first_name,
             last_name
-          ),
-          courtrooms (
-            courtrooms_name,
-            zoom_link,
-            zoom_login,
-            court (
-              name,
-              address
-            )
           )
         `)
         .gte('start_time', start.toISOString())
@@ -47,28 +38,21 @@ export default function Dashboard() {
     fetchJobs();
   }, []);
 
-  // Filter jobs by activeStatuses
-  const filteredJobs = jobs.filter(job => activeStatuses.includes(job.status.toLowerCase()));
-
   return (
-    <div className="flex h-screen">
-      {/* Sidebar for status filters */}
-      <div className="w-64 bg-gray-100 border-r">
-        <JobStatusSidebar selected={activeStatuses} onToggle={setActiveStatuses} />
-      </div>
+    <div className="flex flex-col h-screen">
+      <Navbar />
+      <div className="flex flex-1 overflow-hidden">
+        {/* Job List */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          <h2 className="text-xl font-semibold text-gray-800 mb-2">{today}</h2>
+          {jobs.map((job) => (
+            <JobCard key={job.id} job={job} onClick={() => setSelectedJob(job)} />
+          ))}
+        </div>
 
-      {/* Main Calendar + Details */}
-      <div className="flex flex-1 flex-col">
-        <div className="flex flex-1">
-          {/* Calendar */}
-          <div className="flex-1">
-            <CalendarView jobs={filteredJobs} onSelectJob={setSelectedJob} />
-          </div>
-
-          {/* Event Detail Panel */}
-          <div className="w-80 bg-gray-200 border-l overflow-y-auto">
-            <EventDetails job={selectedJob} onClose={() => setSelectedJob(null)} />
-          </div>
+        {/* Job Detail Panel */}
+        <div className="w-80 bg-gray-200 border-l overflow-y-auto">
+          <JobDetailPanel job={selectedJob} onClose={() => setSelectedJob(null)} />
         </div>
       </div>
     </div>

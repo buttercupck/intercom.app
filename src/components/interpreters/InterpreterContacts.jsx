@@ -11,7 +11,7 @@ export default function InterpreterContacts({ data }) {
 
   const allLanguages = Array.from(
     new Set(
-      data.flatMap((i) => [i.language_1, i.language_2].filter(Boolean))
+      data.flatMap((i) => i.languages.map((l) => l.language).filter(Boolean))
     )
   ).sort();
 
@@ -21,9 +21,9 @@ export default function InterpreterContacts({ data }) {
     const fullName = `${name} ${last}`.toLowerCase();
     const nameMatch = fullName.includes(searchTerm.toLowerCase());
 
-    const certifications = interpreter.certifications || {};
-    const credentialed = Object.values(certifications).includes("Certified") ||
-      Object.values(certifications).includes("Registered");
+    const credentialed = interpreter.languages.some(
+      (l) => l.certification === "Certified" || l.certification === "Registered"
+    );
 
     const matchesCredentialed =
       filterCredentialed === "all" ||
@@ -31,9 +31,7 @@ export default function InterpreterContacts({ data }) {
       (filterCredentialed === "no" && !credentialed);
 
     const matchesLanguage =
-      !languageFilter ||
-      interpreter.language_1 === languageFilter ||
-      interpreter.language_2 === languageFilter;
+      !languageFilter || interpreter.languages.some((l) => l.language === languageFilter);
 
     return nameMatch && matchesCredentialed && matchesLanguage;
   });
@@ -45,8 +43,8 @@ export default function InterpreterContacts({ data }) {
       return aName.localeCompare(bName);
     }
     if (sortBy === "language") {
-      const aLang = (a.language_1 || "").toLowerCase();
-      const bLang = (b.language_1 || "").toLowerCase();
+      const aLang = (a.languages[0]?.language || "").toLowerCase();
+      const bLang = (b.languages[0]?.language || "").toLowerCase();
       return aLang.localeCompare(bLang);
     }
     return 0;
@@ -133,7 +131,7 @@ export default function InterpreterContacts({ data }) {
                 <tr key={interpreter.id} className="border-b hover:bg-gray-50">
                   <td className="p-2"><input type="checkbox" /></td>
                   <td className="p-2 font-medium">
-                    {(interpreter.first_name || "") + " " + (interpreter.last_name || "")}
+                    {interpreter.languages.map((l) => l.language).join(", ")}
                   </td>
                   <td className="p-2">{interpreter.email || "--"}</td>
                   <td className="p-2">{interpreter.phone || "--"}</td>
@@ -141,8 +139,8 @@ export default function InterpreterContacts({ data }) {
                     {[interpreter.language_1, interpreter.language_2].filter(Boolean).join(", ")}
                   </td>
                   <td className="p-2">
-                    {Object.values(interpreter.certifications || {}).some(
-                      (c) => c === "Certified" || c === "Registered"
+                    {interpreter.languages.some(
+                      (c) => c.certification === "Certified" || c.certification === "Registered"
                     ) ? "Yes" : "No"}
                   </td>
                 </tr>
