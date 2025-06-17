@@ -2,7 +2,7 @@
         import JobStatus from "../shared/JobStatus";
 
 
-        export default function JobRequestForm({ courts, interpreters, courtrooms, languages, onSubmit, formData, setFormData }) {
+        export default function JobRequestForm({ courts, interpreters, locations, languages, onSubmit, formData, setFormData }) {
           const [selectedLanguage, setSelectedLanguage] = useState("");
           const [selectedCourtId, setSelectedCourtId] = useState("");
 
@@ -31,7 +31,7 @@
               start_time: start.toISOString(),
               end_time: end.toISOString(),
               duration: formData.duration,
-              courtroom_label: formData.courtroom_id,
+              locations: formData.locations,
               case_notes: formData.case_notes,
               status: formData.status || "initial",
               program_id: formData.program_id || null
@@ -43,7 +43,7 @@
               required_language: "",
               interpreter_id: "",
               court_id: "",
-              courtroom_id: "",
+              locations: "",
               start_time: "",
               duration: 120,
               case_number: "",
@@ -142,16 +142,16 @@
               <div className="space-y-2">
                 <label>Courtroom</label>
                 <select
-                  name="courtroom_id"
-                  value={formData.courtroom_id}
+                  name="locations"
+                  value={formData.locations}
                   onChange={handleChange}
                   className="w-full border rounded p-2"
                   required
                 >
                   <option value="">Select a courtroom</option>
                   {filteredCourtrooms.map((room) => (
-                    <option key={room.courtrooms_id} value={room.courtrooms_id}>
-                      {room.courtrooms_name}
+                    <option key={room.id} value={room.id}>
+                      {room.name}
                     </option>
                   ))}
                 </select>
