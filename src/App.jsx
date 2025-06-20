@@ -4,7 +4,7 @@ import Court from "./pages/Court";
 import Reminders from "./pages/Reminders";
 import Dashboard from "./pages/Dashboard";
 import Interpreters from "./pages/Interpreters";
-import JobRequestFormPage from "./pages/JobRequestFormPage";
+import JobRequestPage from "./pages/JobRequestPage";
 
 function Home() {
   return (
@@ -51,7 +51,7 @@ function App() {
         <Route path="/interpreters" element={<Interpreters />} />
         <Route path="/reminders" element={<Reminders />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/new-request" element={<JobRequestFormPage />} />
+        <Route path="/new-request" element={<JobRequestPage />} />
       </Routes>
     </Router>
   );
