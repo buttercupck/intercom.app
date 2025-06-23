@@ -10,9 +10,9 @@ export default function JobCard({ job, onClick }) {
   const end = addMinutes(start, job.duration || 120);
   const formattedTime = `${format(start, "h:mm a")} – ${format(end, "h:mm a")}`;
 
-  const fullName = `${job.interpreters?.first_name || ""} ${job.interpreters?.last_name || ""}`;
-  const jobLabel = `${job.required_language} ${fullName} - ${job.modality}`;
-  const courtName = job.courtrooms?.court?.name || "";
+  const fullName = `${job.interpreters?.first_name || ""} ${job.interpreters?.last_name || ""}`.trim();
+  const jobLabel = `${job.languages?.name} ${fullName} - ${job.modality}`.trim();
+  const orgName = job.locations?.org?.name || job.locations?.location_name || "";
 
   return (
     <div
@@ -24,7 +24,7 @@ export default function JobCard({ job, onClick }) {
       <div className="p-4 flex-1">
         <div className="text-sm text-gray-600 mb-1">{formattedTime}</div>
         <div className="text-md font-semibold">{jobLabel}</div>
-        <div className="text-sm text-gray-700">{courtName}</div>
+        <div className="text-sm text-gray-700">{orgName}</div>
       </div>
     </div>
   );

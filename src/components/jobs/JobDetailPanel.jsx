@@ -3,11 +3,11 @@ import { supabase } from "../../lib/supabase";
 import JobStatus from "../shared/JobStatus";
 import { format, addMinutes } from "date-fns";
 
-export default function JobDetailPanel({ job, onClose, interpreters = [], courtrooms = [] }) {
+export default function JobDetailPanel({ job, onClose, interpreters = [], locations = [] }) {
   const [status, setStatus] = useState(job?.status);
   const [modality, setModality] = useState(job?.modality);
   const [interpreterId, setInterpreterId] = useState(job?.interpreter_id);
-  const [courtroomId, setCourtroomId] = useState(job?.courtroom_id);
+  const [locationId, setLocationId] = useState(job?.location_id);
   const [caseNotes, setCaseNotes] = useState(job?.case_notes || "");
 
   if (!job) return null;
@@ -33,7 +33,13 @@ export default function JobDetailPanel({ job, onClose, interpreters = [], courtr
       .eq("id", job.id);
     if (error) console.error(`Failed to update ${field}:`, error);
   };
+  const filteredInterpreters = interpreters.filter((i) =>
+    i.interpreter_languages?.some((lang) => lang.language_id === job.required_language_id)
+  );
 
+  const filteredLocations = locations.filter((loc) =>
+    loc.org_id === job.locations?.organizations?.id
+  );
   return (
     <div className="h-full p-4 bg-white shadow-inner flex flex-col space-y-2">
       <button
@@ -43,11 +49,16 @@ export default function JobDetailPanel({ job, onClose, interpreters = [], courtr
         ✕ Close
       </button>
 
-      <h2 className="text-xl font-bold">{job.required_language}</h2>
+      <h2 className="text-xl font-bold">{job.languages?.name}</h2>
       <p className="text-gray-600 text-sm">
         {formattedDate} — {formattedTime}
       </p>
-
+      {job.locations?.organizations?.name && (
+        <p className="text-sm text-gray-700 italic">
+          org: {job.locations.organizations.name}
+          location: {job.locations.name}
+        </p>
+      )}
       {/* Interpreter Dropdown */}
       <div>
         <label className="text-sm font-medium text-gray-700 block mb-1">Interpreter</label>
@@ -60,13 +71,11 @@ export default function JobDetailPanel({ job, onClose, interpreters = [], courtr
           className="w-full border border-gray-300 rounded p-2"
         >
           <option value="">Select Interpreter</option>
-          {interpreters
-            .filter((i) => i.languages.includes(job.required_language))
-            .map((i) => (
-              <option key={i.id} value={i.id}>
-                {i.first_name} {i.last_name}
-              </option>
-            ))}
+          {filteredInterpreters.map((i) => (
+            <option key={i.id} value={i.id}>
+              {i.first_name} {i.last_name}
+            </option>
+          ))}
         </select>
       </div>
 
@@ -90,20 +99,20 @@ export default function JobDetailPanel({ job, onClose, interpreters = [], courtr
         </select>
       </div>
 
-      {/* Courtroom Dropdown */}
+      {/* Location Dropdown */}
       <div>
-        <label className="text-sm font-medium text-gray-700 block mb-1">Courtroom</label>
+        <label className="text-sm font-medium text-gray-700 block mb-1">Location</label>
         <select
-          value={courtroomId || ""}
+          value={locationId || ""}
           onChange={(e) => {
-            setCourtroomId(e.target.value);
-            handleUpdateField("courtroom_id", e.target.value);
+            setLocationId(e.target.value);
+            handleUpdateField("location_id", e.target.value);
           }}
           className="w-full border border-gray-300 rounded p-2"
         >
-          <option value="">Select Courtroom</option>
-          {courtrooms.map((c) => (
-            <option key={c.id} value={c.id}>{c.courtrooms_name}</option>
+          <option value="">Select Location</option>
+          {filteredLocations.map((loc) => (
+          <option key={loc.id} value={loc.id}>{loc.name}</option>
           ))}
         </select>
       </div>
