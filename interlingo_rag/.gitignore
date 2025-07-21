@@ -2,7 +2,7 @@
 venv/
 
 # Ignore local database files
-my-interlingo-rag/vector_db/
+interlingo_rag/vector_db/
 
 # Ignore sensitive environment variables file
 /.env
